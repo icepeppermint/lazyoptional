@@ -46,7 +46,7 @@ class LazyOptionalTest {
     }
 
     @Test
-    void fromOptional_laziness() {
+    void from_laziness() {
         try {
             Optional.of(1).map(v -> {
                 throw new IllegalStateException();
