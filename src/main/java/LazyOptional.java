@@ -176,9 +176,8 @@ public interface LazyOptional<T> {
         }
     }
 
-    @SuppressWarnings("all")
     static <R> R rethrow(Throwable e) {
-        return LazyOptional.<R, RuntimeException>typeErasure(e);
+        return LazyOptional.typeErasure(e);
     }
 
     @SuppressWarnings("unchecked")
