@@ -15,11 +15,11 @@ import java.util.stream.Stream;
 @FunctionalInterface
 public interface LazyOptional<T> {
 
-    Lazy<T> container();
+    Container<T> container();
 
     static <T> LazyOptional<T> of(T value) {
         requireNonNull(value, "value");
-        return () -> Lazy.lazy(() -> value);
+        return () -> Container.wrap(() -> value);
     }
 
     static <T> LazyOptional<T> ofNullable(T value) {
@@ -27,9 +27,10 @@ public interface LazyOptional<T> {
     }
 
     static <T> LazyOptional<T> empty() {
-        return () -> Lazy.lazy(() -> null);
+        return () -> Container.wrap(() -> null);
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     static <T> LazyOptional<T> from(Optional<T> optional) {
         requireNonNull(optional, "optional");
         return optional.map(LazyOptional::ofNullable).orElse(empty());
@@ -47,7 +48,7 @@ public interface LazyOptional<T> {
 
     default LazyOptional<T> filter(Predicate<? super T> predicate) {
         requireNonNull(predicate, "predicate");
-        return () -> Lazy.lazy(() -> {
+        return () -> Container.wrap(() -> {
             final T value = container().get();
             return value == null || !predicate.test(value) ? null : value;
         });
@@ -55,7 +56,7 @@ public interface LazyOptional<T> {
 
     default <R> LazyOptional<R> map(Function<? super T, ? extends R> mapper) {
         requireNonNull(mapper, "mapper");
-        return () -> Lazy.lazy(() -> {
+        return () -> Container.wrap(() -> {
             final T value = container().get();
             return value == null ? null : mapper.apply(value);
         });
@@ -63,7 +64,7 @@ public interface LazyOptional<T> {
 
     default <R> LazyOptional<R> flatMap(Function<? super T, LazyOptional<R>> mapper) {
         requireNonNull(mapper, "mapper");
-        return () -> Lazy.lazy(() -> {
+        return () -> Container.wrap(() -> {
             final T value = container().get();
             return value == null ? null : mapper.apply(value).container().get();
         });
@@ -73,7 +74,7 @@ public interface LazyOptional<T> {
                                                           Supplier<? extends X> exceptionSupplier) {
         requireNonNull(predicate, "predicate");
         requireNonNull(exceptionSupplier, "exceptionSupplier");
-        return () -> Lazy.lazy(() -> {
+        return () -> Container.wrap(() -> {
             final T value = container().get();
             return predicate.test(value) ? rethrow(exceptionSupplier.get()) : value;
         });
@@ -81,7 +82,7 @@ public interface LazyOptional<T> {
 
     default LazyOptional<T> or(Supplier<? extends LazyOptional<T>> supplier) {
         requireNonNull(supplier, "supplier");
-        return () -> Lazy.lazy(() -> {
+        return () -> Container.wrap(() -> {
             final T value = container().get();
             if (value == null) {
                 final LazyOptional<T> other = supplier.get();
@@ -103,7 +104,7 @@ public interface LazyOptional<T> {
         requireNonNull(lazyOptionalA, "lazyOptionalA");
         requireNonNull(lazyOptionalB, "lazyOptionalB");
         requireNonNull(zipper, "zipper");
-        return () -> Lazy.lazy(() -> {
+        return () -> Container.wrap(() -> {
             final A valueA = lazyOptionalA.container().get();
             final B valueB = lazyOptionalB.container().get();
             return valueA == null || valueB == null ? null : zipper.apply(valueA, valueB);
@@ -161,7 +162,7 @@ public interface LazyOptional<T> {
     }
 
     @FunctionalInterface
-    interface Lazy<T> {
+    interface Container<T> {
 
         Supplier<T> supplier();
 
@@ -169,19 +170,19 @@ public interface LazyOptional<T> {
             return supplier().get();
         }
 
-        static <U> Lazy<U> lazy(Supplier<U> supplier) {
+        static <U> Container<U> wrap(Supplier<U> supplier) {
             requireNonNull(supplier, "supplier");
             return () -> supplier;
         }
     }
 
     @SuppressWarnings("all")
-    static <R> R rethrow(Throwable throwable) {
-        return LazyOptional.<R, RuntimeException>typeErasure(throwable);
+    static <R> R rethrow(Throwable e) {
+        return LazyOptional.<R, RuntimeException>typeErasure(e);
     }
 
     @SuppressWarnings("unchecked")
-    static <R, T extends Throwable> R typeErasure(Throwable throwable) throws T {
-        throw (T) throwable;
+    static <R, T extends Throwable> R typeErasure(Throwable e) throws T {
+        throw (T) e;
     }
 }
