@@ -9,18 +9,20 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * An Optional implementation that supports laziness.
+ */
 @FunctionalInterface
 public interface LazyOptional<T> {
 
     Lazy<T> container();
 
-    static <T> LazyOptional<T> of(final T value) {
+    static <T> LazyOptional<T> of(T value) {
         requireNonNull(value, "value");
-
         return () -> Lazy.lazy(() -> value);
     }
 
-    static <T> LazyOptional<T> ofNullable(final T value) {
+    static <T> LazyOptional<T> ofNullable(T value) {
         return value == null ? empty() : of(value);
     }
 
@@ -28,9 +30,8 @@ public interface LazyOptional<T> {
         return () -> Lazy.lazy(() -> null);
     }
 
-    static <T> LazyOptional<T> fromOptional(final Optional<T> optional) {
+    static <T> LazyOptional<T> from(Optional<T> optional) {
         requireNonNull(optional, "optional");
-
         return optional.map(LazyOptional::ofNullable).orElse(empty());
     }
 
@@ -44,48 +45,42 @@ public interface LazyOptional<T> {
         return value == null ? Stream.empty() : Stream.of(value);
     }
 
-    default LazyOptional<T> filter(final Predicate<? super T> predicate) {
+    default LazyOptional<T> filter(Predicate<? super T> predicate) {
         requireNonNull(predicate, "predicate");
-
         return () -> Lazy.lazy(() -> {
             final T value = container().get();
             return value == null || !predicate.test(value) ? null : value;
         });
     }
 
-    default <R> LazyOptional<R> map(final Function<? super T, ? extends R> mapper) {
+    default <R> LazyOptional<R> map(Function<? super T, ? extends R> mapper) {
         requireNonNull(mapper, "mapper");
-
         return () -> Lazy.lazy(() -> {
             final T value = container().get();
             return value == null ? null : mapper.apply(value);
         });
     }
 
-    default <R> LazyOptional<R> flatMap(final Function<? super T, LazyOptional<R>> mapper) {
+    default <R> LazyOptional<R> flatMap(Function<? super T, LazyOptional<R>> mapper) {
         requireNonNull(mapper, "mapper");
-
         return () -> Lazy.lazy(() -> {
             final T value = container().get();
             return value == null ? null : mapper.apply(value).container().get();
         });
     }
 
-    default <X extends Throwable> LazyOptional<T> throwIf(
-            final Predicate<? super T> predicate,
-            final Supplier<? extends X> exceptionSupplier) {
+    default <X extends Throwable> LazyOptional<T> throwIf(Predicate<? super T> predicate,
+                                                          Supplier<? extends X> exceptionSupplier) {
         requireNonNull(predicate, "predicate");
         requireNonNull(exceptionSupplier, "exceptionSupplier");
-
         return () -> Lazy.lazy(() -> {
             final T value = container().get();
             return predicate.test(value) ? rethrow(exceptionSupplier.get()) : value;
         });
     }
 
-    default LazyOptional<T> or(final Supplier<? extends LazyOptional<T>> supplier) {
+    default LazyOptional<T> or(Supplier<? extends LazyOptional<T>> supplier) {
         requireNonNull(supplier, "supplier");
-
         return () -> Lazy.lazy(() -> {
             final T value = container().get();
             if (value == null) {
@@ -97,35 +92,31 @@ public interface LazyOptional<T> {
         });
     }
 
-    default <U, R> LazyOptional<R> zip(final LazyOptional<? extends U> other,
-            final BiFunction<? super T, ? super U, R> zipper) {
+    default <U, R> LazyOptional<R> zip(LazyOptional<? extends U> other,
+                                       BiFunction<? super T, ? super U, R> zipper) {
         return zip(this, other, zipper);
     }
 
-    static <A, B, R> LazyOptional<R> zip(
-            final LazyOptional<? extends A> lazyOptionalA,
-            final LazyOptional<? extends B> lazyOptionalB,
-            final BiFunction<? super A, ? super B, R> zipper) {
+    static <A, B, R> LazyOptional<R> zip(LazyOptional<? extends A> lazyOptionalA,
+                                         LazyOptional<? extends B> lazyOptionalB,
+                                         BiFunction<? super A, ? super B, R> zipper) {
         requireNonNull(lazyOptionalA, "lazyOptionalA");
         requireNonNull(lazyOptionalB, "lazyOptionalB");
         requireNonNull(zipper, "zipper");
-
         return () -> Lazy.lazy(() -> {
             final A valueA = lazyOptionalA.container().get();
             final B valueB = lazyOptionalB.container().get();
-
             return valueA == null || valueB == null ? null : zipper.apply(valueA, valueB);
         });
     }
 
-    default T orElse(final T other) {
+    default T orElse(T other) {
         final T value = container().get();
         return value == null ? other : value;
     }
 
-    default T orElseGet(final Supplier<? extends T> other) {
+    default T orElseGet(Supplier<? extends T> other) {
         requireNonNull(other, "other");
-
         final T value = container().get();
         return value == null ? other.get() : value;
     }
@@ -134,9 +125,8 @@ public interface LazyOptional<T> {
         return orElseThrow(() -> new NoSuchElementException("No value present"));
     }
 
-    default <X extends Throwable> T orElseThrow(final Supplier<? extends X> exceptionSupplier) {
+    default <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) {
         requireNonNull(exceptionSupplier, "exceptionSupplier");
-
         final T value = container().get();
         return value == null ? rethrow(exceptionSupplier.get()) : value;
     }
@@ -151,19 +141,17 @@ public interface LazyOptional<T> {
         return value != null;
     }
 
-    default void ifPresent(final Consumer<? super T> consumer) {
+    default void ifPresent(Consumer<? super T> consumer) {
         requireNonNull(consumer, "consumer");
-
         final T value = container().get();
         if (value != null) {
             consumer.accept(value);
         }
     }
 
-    default void ifPresentOrElse(final Consumer<? super T> consumer, final Runnable other) {
+    default void ifPresentOrElse(Consumer<? super T> consumer, Runnable other) {
         requireNonNull(consumer, "consumer");
         requireNonNull(other, "other");
-
         final T value = container().get();
         if (value == null) {
             other.run();
@@ -181,20 +169,19 @@ public interface LazyOptional<T> {
             return supplier().get();
         }
 
-        static <U> Lazy<U> lazy(final Supplier<U> supplier) {
+        static <U> Lazy<U> lazy(Supplier<U> supplier) {
             requireNonNull(supplier, "supplier");
-
             return () -> supplier;
         }
     }
 
     @SuppressWarnings("all")
-    static <R> R rethrow(final Throwable throwable) {
+    static <R> R rethrow(Throwable throwable) {
         return LazyOptional.<R, RuntimeException>typeErasure(throwable);
     }
 
     @SuppressWarnings("unchecked")
-    static <R, T extends Throwable> R typeErasure(final Throwable throwable) throws T {
+    static <R, T extends Throwable> R typeErasure(Throwable throwable) throws T {
         throw (T) throwable;
     }
 }

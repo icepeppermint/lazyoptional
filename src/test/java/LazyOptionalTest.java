@@ -33,11 +33,11 @@ public class LazyOptionalTest {
     }
 
     @Test
-    public void fromOptional() {
-        assertThat(LazyOptional.fromOptional(Optional.of(1)).orElseThrow(), is(1));
+    public void from() {
+        assertThat(LazyOptional.from(Optional.of(1)).orElseThrow(), is(1));
 
         try {
-            LazyOptional.fromOptional(Optional.empty()).orElseThrow();
+            LazyOptional.from(Optional.empty()).orElseThrow();
             fail();
         } catch (final NoSuchElementException ignored) {}
     }
@@ -51,12 +51,12 @@ public class LazyOptionalTest {
             fail();
         } catch (IllegalStateException ignored) {}
 
-        LazyOptional.fromOptional(Optional.of(1)).map(v -> {
+        LazyOptional.from(Optional.of(1)).map(v -> {
             throw new IllegalStateException();
         });
 
         try {
-            LazyOptional.fromOptional(Optional.of(1)).map(v -> {
+            LazyOptional.from(Optional.of(1)).map(v -> {
                 throw new IllegalStateException();
             }).get();
             fail();
@@ -83,10 +83,10 @@ public class LazyOptionalTest {
     public void map_filter_flatMap() {
         assertThat(
                 LazyOptional.of(1)
-                        .map(v -> v + 1)
-                        .filter(v -> v % 2 == 0)
-                        .flatMap(LazyOptional::of)
-                        .orElseThrow(),
+                            .map(v -> v + 1)
+                            .filter(v -> v % 2 == 0)
+                            .flatMap(LazyOptional::of)
+                            .orElseThrow(),
                 is(2));
     }
 
@@ -132,18 +132,18 @@ public class LazyOptionalTest {
 
         assertThat(
                 LazyOptional.of(1)
-                        .map(v -> v + 1)
-                        .throwIf(v -> v < 2, () -> new IllegalStateException("v < 2"))
-                        .map(v -> v)
-                        .orElseThrow(),
+                            .map(v -> v + 1)
+                            .throwIf(v -> v < 2, () -> new IllegalStateException("v < 2"))
+                            .map(v -> v)
+                            .orElseThrow(),
                 is(2));
 
         try {
             LazyOptional.of(1)
-                    .map(v -> v + 1)
-                    .throwIf(v -> v <= 2, () -> new IllegalStateException("v <= 2"))
-                    .map(v -> v)
-                    .orElseThrow();
+                        .map(v -> v + 1)
+                        .throwIf(v -> v <= 2, () -> new IllegalStateException("v <= 2"))
+                        .map(v -> v)
+                        .orElseThrow();
             fail();
         } catch (final IllegalStateException e) {
             assertThat(e.getMessage(), is("v <= 2"));
@@ -153,16 +153,16 @@ public class LazyOptionalTest {
 
         try {
             LazyOptional.of(1)
-                    .throwIf(v -> v < 1, () -> new IllegalStateException("v < 1"))
-                    .map(v -> v + 1)
-                    .throwIf(v -> v < 2, () -> new IllegalStateException("v < 2"))
-                    .map(v -> v + 1)
-                    .throwIf(v -> v < 3, () -> new IllegalStateException("v < 3"))
-                    .map(v -> v + 1)
-                    .throwIf(v -> v < 10000, () -> new IllegalStateException("v < 10000"))
-                    .map(v -> v + 1)
-                    .throwIf(v -> v < 20000, () -> new IllegalStateException("v < 20000"))
-                    .get();
+                        .throwIf(v -> v < 1, () -> new IllegalStateException("v < 1"))
+                        .map(v -> v + 1)
+                        .throwIf(v -> v < 2, () -> new IllegalStateException("v < 2"))
+                        .map(v -> v + 1)
+                        .throwIf(v -> v < 3, () -> new IllegalStateException("v < 3"))
+                        .map(v -> v + 1)
+                        .throwIf(v -> v < 10000, () -> new IllegalStateException("v < 10000"))
+                        .map(v -> v + 1)
+                        .throwIf(v -> v < 20000, () -> new IllegalStateException("v < 20000"))
+                        .get();
             fail();
         } catch (final IllegalStateException e) {
             assertThat(e.getMessage(), is("v < 10000"));
@@ -173,10 +173,13 @@ public class LazyOptionalTest {
 
     @Test
     public void throwIf_laziness() {
-        LazyOptional.empty().throwIf(v -> true, IllegalStateException::new).throwIf(v -> true, IllegalStateException::new);
+        LazyOptional.empty().throwIf(v -> true, IllegalStateException::new).throwIf(v -> true,
+                                                                                    IllegalStateException::new);
 
         try {
-            LazyOptional.empty().throwIf(v -> true, IllegalStateException::new).throwIf(v -> true, IllegalStateException::new).get();
+            LazyOptional.empty().throwIf(v -> true, IllegalStateException::new).throwIf(v -> true,
+                                                                                        IllegalStateException::new)
+                        .get();
             fail();
         } catch (final IllegalStateException ignored) {} catch (final NoSuchElementException ignored) {
             fail();
@@ -194,7 +197,8 @@ public class LazyOptionalTest {
         LazyOptional.<Integer>empty().or(LazyOptional::empty).or(LazyOptional::empty);
         LazyOptional.<Integer>empty().or(() -> LazyOptional.of(1)).or(() -> LazyOptional.of(1));
 
-        assertThat(LazyOptional.<Integer>empty().or(() -> LazyOptional.of(1)).or(() -> LazyOptional.of(1)).orElseThrow(), is(1));
+        assertThat(LazyOptional.<Integer>empty().or(() -> LazyOptional.of(1)).or(() -> LazyOptional.of(1))
+                               .orElseThrow(), is(1));
 
         try {
             LazyOptional.<Integer>empty().or(LazyOptional::empty).or(LazyOptional::empty).orElseThrow();
@@ -229,7 +233,8 @@ public class LazyOptionalTest {
         LazyOptional.zip(LazyOptional.empty(), LazyOptional.empty(), (a, b) -> a);
 
         try {
-            LazyOptional.empty().zip(LazyOptional.empty(), (a, b) -> a).zip(LazyOptional.empty(), (a, b) -> a).orElseThrow();
+            LazyOptional.empty().zip(LazyOptional.empty(), (a, b) -> a).zip(LazyOptional.empty(), (a, b) -> a)
+                        .orElseThrow();
             fail();
         } catch (final NoSuchElementException ignored) {}
 
