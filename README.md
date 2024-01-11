@@ -1,6 +1,10 @@
 # LazyOptional
 
-> An Optional implementation that supports laziness
+> Try using the lazy Java Optional
+
+_LazyOptional_ is a super lightweight library Optional implementation that supports lazy evaluation. You can very easily use LazyOptional as a complement to Java Optional.
+
+## Why do we need LazyOptional?
 
 ---
 
@@ -29,6 +33,12 @@ No exception occurs. Nothing happens. This is because the map operator in Stream
 Then what about Java Optional? Generally, operations like filter, map, flatMap, distinct, sorted, peek, limit, skip are intermediate operations. However, Java Optional behaves like terminal operations for these. One thing to note here is that it is not a problem in itself to behave eagerly or lazily in certain situations or not. Being lazy is not always good. Conversely, being eager is not always bad. The problem is that it does not behave as we thought, that is, it does not behave sensibly.
 
 Let's dive into the LazyOptional.
+
+## Getting started
+
+---
+
+Let's create an empty LazyOptional and run it.
 ```java
 LazyOptional.empty();
 ```
@@ -39,6 +49,7 @@ LazyOptional.ofNullable(nullValue)
             .map(v -> throw new IllegalStateException());
 ```
 Likewise, nothing happens. That is, `IllegalStateException` does not occur.
+This is because LazyOptional supports lazy evaluation.
 
 Then, does LazyOptional work well with the existing Optional?
 
