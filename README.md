@@ -1,6 +1,6 @@
 # LazyOptional
 
-> Try using the lazy Java Optional
+> A Java Optional implementation that supports lazy evaluation
 
 [![build](https://github.com/icepeppermint/lazyoptional/actions/workflows/gradle.yml/badge.svg?branch=develop)](https://github.com/icepeppermint/lazyoptional/actions/workflows/gradle.yml)
 <a href="https://github.com/icepeppermint/lazyoptional/contributors"><img src="https://img.shields.io/github/contributors/icepeppermint/lazyoptional.svg"></a>
