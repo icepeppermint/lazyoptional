@@ -275,7 +275,7 @@ public interface LazyOptional<T> {
     }
 
     static <R> R rethrow(Throwable e) {
-        return LazyOptional.typeErasure(e);
+        return typeErasure(e);
     }
 
     @SuppressWarnings("unchecked")
