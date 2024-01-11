@@ -6,8 +6,6 @@ _LazyOptional_ is a super lightweight Optional implementation that supports lazy
 
 ## Why do we need LazyOptional?
 
----
-
 Java Optional is a tool that helps with null-safety, and unlike modern languages where it is included in the language spec itself, it is added as a library format to ensure backward compatibility.
 
 The usage of the Optional class is not difficult, so let's skip it and look at the problem directly.
@@ -35,8 +33,6 @@ Then what about Java Optional? Generally, operations like filter, map, flatMap, 
 Let's dive into the LazyOptional.
 
 ## Getting started
-
----
 
 Let's create an empty LazyOptional and run it.
 ```java
