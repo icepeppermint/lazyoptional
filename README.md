@@ -2,6 +2,10 @@
 
 > Try using the lazy Java Optional
 
+[![build](https://github.com/icepeppermint/lazyoptional/actions/workflows/gradle.yml/badge.svg?branch=develop)](https://github.com/icepeppermint/lazyoptional/actions/workflows/gradle.yml)
+<a href="https://github.com/icepeppermint/lazyoptional/contributors"><img src="https://img.shields.io/github/contributors/icepeppermint/lazyoptional.svg"></a>
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 _LazyOptional_ is a super lightweight Optional implementation that supports lazy evaluation. You can very easily use LazyOptional as a complement to Java Optional.
 
 ## Why do we need LazyOptional?
