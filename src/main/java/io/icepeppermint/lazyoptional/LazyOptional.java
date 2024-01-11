@@ -1,3 +1,5 @@
+package io.icepeppermint.lazyoptional;
+
 import static java.util.Objects.requireNonNull;
 
 import java.util.NoSuchElementException;
