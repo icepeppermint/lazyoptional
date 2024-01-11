@@ -2,7 +2,7 @@
 
 > Try using the lazy Java Optional
 
-_LazyOptional_ is a super lightweight library Optional implementation that supports lazy evaluation. You can very easily use LazyOptional as a complement to Java Optional.
+_LazyOptional_ is a super lightweight Optional implementation that supports lazy evaluation. You can very easily use LazyOptional as a complement to Java Optional.
 
 ## Why do we need LazyOptional?
 
