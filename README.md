@@ -8,7 +8,7 @@ _LazyOptional_ is a super lightweight Optional implementation that supports lazy
 
 Java Optional is a tool that helps with null-safety, and unlike modern languages where it is included in the language spec itself, it is added as a library format to ensure backward compatibility.
 
-The usage of the Optional class is not difficult, so let's skip it and look at the problem directly.
+The usage of the Java Optional class is not difficult, so let's skip it and look at the problem directly.
 
 ```java
 Object nullValue = null;
@@ -26,7 +26,7 @@ Stream.of(nullValue)
       .map(v -> throw new IllegalStateException());
 ```
 
-No exception occurs. Nothing happens. This is because the map operator in Stream is not a terminal operation. Stream enables declarative programming through lazy evaluation.
+No exception occurs. Nothing happens. This is because the map operator in Java Stream is not a terminal operation. Java Stream enables declarative programming through lazy evaluation.
 
 Then what about Java Optional? Generally, operations like filter, map, flatMap, distinct, sorted, peek, limit, skip are intermediate operations. However, Java Optional behaves like terminal operations for these. One thing to note here is that it is not a problem in itself to behave eagerly or lazily in certain situations or not. Being lazy is not always good. Conversely, being eager is not always bad. The problem is that it does not behave as we thought, that is, it does not behave sensibly.
 
@@ -47,27 +47,27 @@ LazyOptional.ofNullable(nullValue)
 Likewise, nothing happens. That is, `IllegalStateException` does not occur.
 This is because LazyOptional supports lazy evaluation.
 
-Then, does LazyOptional work well with the existing Optional?
+Then, does LazyOptional work well with the existing Java Optional?
 
 ```java
-// Optional -> LazyOptional
+// Java Optional -> LazyOptional
 LazyOptional.from(Optional.of(1));
 
-// LazyOptional -> Optional
+// LazyOptional -> Java Optional
 LazyOptional.of(1).optional();
 ```
 
-What about Optional -> Stream? In Java 8, to do this, you had to manually extract the value inside Optional and pass that value when creating Stream, which was cumbersome.
+What about Java Optional -> Java Stream? In Java 8, to do this, you had to manually extract the value inside Java Optional and pass that value when creating Java Stream, which was cumbersome.
 
 This was added in Java 9, and LazyOptional also supports it.
 ```java
-// Java 8's Optional -> Stream
+// Java 8's Optional -> Java Stream
 Stream.of(Optional.of(1).orElseThrow(...));
 
-// Java 9's Optional -> Stream
+// Java 9's Optional -> Java Stream
 Optional.of(1).stream();
 
-// LazyOptional -> Stream
+// LazyOptional -> Java Stream
 LazyOptional.of(1).stream();
 ```
 
