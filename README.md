@@ -11,7 +11,7 @@ Java Optional is a tool that helps with null-safety, and unlike modern languages
 The usage of the Optional class is not difficult, so let's skip it and look at the problem directly.
 
 ```java
-final Object nullValue = null;
+Object nullValue = null;
 Optional.ofNullable(nullValue)
         .map(v -> throw new IllegalStateException());
 ```
@@ -21,7 +21,7 @@ What would be the result of running the above code? An `IllegalStateException` e
 Then what about this?
 
 ```java
-final Object nullValue = null;
+Object nullValue = null;
 Stream.of(nullValue)
       .map(v -> throw new IllegalStateException());
 ```
@@ -40,7 +40,7 @@ LazyOptional.empty();
 ```
 The above code does nothing. Then what about the code below?
 ```java
-final Object nullValue = null;
+Object nullValue = null;
 LazyOptional.ofNullable(nullValue)
             .map(v -> throw new IllegalStateException());
 ```
